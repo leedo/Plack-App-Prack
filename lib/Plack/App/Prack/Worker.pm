@@ -7,9 +7,12 @@ use Time::HiRes;
 use File::Temp ':POSIX';
 use IO::Socket::UNIX;
 use Plack::App::Prack::Request;
+use Path::Class;
 
-my $NACK = '$0="prack-worker"; Nack::Server.run(ARGV[0], :file => ARGV[1])';
-my $OPTS = '-Ilib -rnack/server';
+my $NACK = 'Nack::Server.run(ARGV[0], :file => ARGV[1])';
+my $dir = file($INC{"Plack/App/Prack/Worker.pm"})->dir->absolute;
+my $OPTS = "-I$dir -rnack/server";
+
 
 sub new {
   my ($class, %args) = @_;
@@ -23,7 +26,6 @@ sub new {
 
 sub spawn {
   my $self = shift;
-
   my $tmp = tmpnam;
 
   if (fork) {
