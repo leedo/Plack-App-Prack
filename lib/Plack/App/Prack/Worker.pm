@@ -7,10 +7,9 @@ use Time::HiRes;
 use File::Temp ':POSIX';
 use IO::Socket::UNIX;
 use Plack::App::Prack::Request;
-use Path::Class;
 
 my $NACK = 'Nack::Server.run(ARGV[0], :file => ARGV[1])';
-my $dir = file($INC{"Plack/App/Prack/Worker.pm"})->dir->absolute;
+my ($dir) = ($INC{"Plack/App/Prack/Worker.pm"} =~ m{^(.*)/});
 my $OPTS = "-I$dir -rnack/server";
 
 
