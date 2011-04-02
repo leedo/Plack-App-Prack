@@ -10,7 +10,7 @@ use Plack::App::Prack::Request;
 
 my $NACK = 'Nack::Server.run(ARGV[0], :file => ARGV[1])';
 my ($dir) = ($INC{"Plack/App/Prack/Worker.pm"} =~ m{^(.*)/});
-my $OPTS = "-I$dir -rnack/server";
+my @OPTS = ('ruby', '-I', $dir, '-r', 'nack/server', '-e', $NACK);
 
 
 sub new {
@@ -46,7 +46,7 @@ sub spawn {
     $self->{file} = $tmp;
   }
   else {
-    exec "ruby $OPTS -e'$NACK' $self->{config} $tmp";
+    exec { $OPTS[0] } @OPTS, $self->{config}, $tmp;
   }
 }
 
