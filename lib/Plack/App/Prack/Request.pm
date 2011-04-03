@@ -42,20 +42,30 @@ sub response {
   return Plack::App::Prack::Response->new($self->{sock});
 }
 
-sub encode {
-  my ($self, $data) = @_;
-  my $json = encode_json $data;
-  return length($json).":".$json.",";
+sub encode_ns {
+  my $data = shift;
+  return length($data).":".$data.",";
 }
 
 sub write {
   my $self = shift;
 
-  my $env = $self->_filter_env($self->{env});
-  my $ns = $self->encode($env);
+  my $env = encode_json($self->_filter_env($self->{env}));
 
-  $self->{sock}->write($ns);
+  my $input = "";
+  my $buf = "";
+
+  while ($self->{env}->{'psgi.input'}->read($buf, 1024)) {
+    $input .= $buf;
+  }
+
+  $self->_write($env, $input);
   $self->{sock}->shutdown(1);
+}
+
+sub _write {
+  my ($self, @strings) = @_;
+  $self->{sock}->write(join "", map {encode_ns $_} @strings);
 }
 
 sub _filter_env {
