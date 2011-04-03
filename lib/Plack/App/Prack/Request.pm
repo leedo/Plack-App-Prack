@@ -6,8 +6,8 @@ use warnings;
 use JSON;
 use Plack::App::Prack::Response;
 
-my @ENV_KEYS = qw/REQUEST_METHOD PATH_INFO QUERY_STRING SCRIPT_NAME
-                  REMOTE_ADDR SERVER_ADDR SERVER_NAME SERVER_PORT/;
+my @ENV_KEYS = qw/REQUEST_METHOD PATH_INFO QUERY_STRING 
+                  SERVER_NAME SERVER_PORT/;
 
 sub new {
   my ($class, $file, $env) = @_;
@@ -72,6 +72,9 @@ sub _filter_env {
   my ($self, $env) = @_;
 
   +{
+    SERVER_ADDR => '0.0.0.0',
+    REMOTE_ADDR => '0.0.0.0',
+    SCRIPT_NAME => "",
     map {$_ => $env->{$_}} @ENV_KEYS, grep {/^HTTP_/} keys %$env
   }
 }
