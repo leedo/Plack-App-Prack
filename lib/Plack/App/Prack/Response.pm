@@ -22,7 +22,11 @@ sub read {
 
   $self->{status} = $self->read_ns;
   $self->{headers} = decode_json $self->read_ns;
-  $self->{body} = $self->read_ns;
+  $self->{body} = [];
+
+  while (my $chunk = $self->read_ns) {
+    push @{$self->{body}}, $chunk;
+  }
 
   $self->{sock}->shutdown(0);
 }
@@ -36,17 +40,22 @@ sub headers {
   return [];
 }
 
+sub status {
+  my $self = shift;
+  return $self->{status} || 500;
+}
+
 sub body {
   my $self = shift;
   if ($self->{body}) {
-    return [$self->{body}];
+    return $self->{body};
   }
   return [];
 }
 
 sub to_psgi {
   my $self = shift;
-  return [$self->{status} || 500, $self->headers, $self->body]
+  return [$self->status, $self->headers, $self->body]
 }
 
 sub read_ns {
