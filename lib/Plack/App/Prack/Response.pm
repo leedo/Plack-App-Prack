@@ -20,15 +20,28 @@ sub new {
 sub read {
   my $self = shift;
 
-  $self->{status} = $self->read_ns;
+  my $chunk = $self->read_ns;
+
+  # doesn't look like a status code, probably a stack trace
+  if ($chunk !~ /^\d+/) {
+    return $self->handle_error($chunk);
+  }
+
+  $self->{status} = $chunk;
   $self->{headers} = decode_json $self->read_ns;
   $self->{body} = [];
 
   while (my $chunk = $self->read_ns) {
     push @{$self->{body}}, $chunk;
   }
-
+  
   $self->{sock}->shutdown(0);
+}
+
+sub handle_error {
+  my ($self, $json) = @_;
+  my $stack = decode_json $json;
+  die join "\n", map {$stack->{$_}} qw/name message stack/;
 }
 
 sub headers {
