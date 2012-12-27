@@ -7,5 +7,6 @@ build_requires "Test::More";
 requires "Plack";
 requires "JSON";
 requires "parent";
+requires_external_bin "rackup";
 auto_set_repository;
 WriteAll;
