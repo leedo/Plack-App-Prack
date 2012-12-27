@@ -12,3 +12,5 @@
 \.gz$
 \.cvsignore
 \.shipit
+hello.ru
+app.psgi
