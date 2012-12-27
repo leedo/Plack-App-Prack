@@ -1,2 +1,2 @@
-steps = FindVersion, ChangeVersion, CheckChangeLog, DistTest, Commit, Tag
+steps = FindVersion, ChangeVersion, CheckChangeLog, Commit, Tag, MakeDist, UploadCPAN
 git.push_to = origin
