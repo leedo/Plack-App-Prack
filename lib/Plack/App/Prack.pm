@@ -6,7 +6,7 @@ use strict;
 use Plack::Util::Accessor qw/config/;
 use Plack::App::Prack::Worker;
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 use parent 'Plack::Component';
 
