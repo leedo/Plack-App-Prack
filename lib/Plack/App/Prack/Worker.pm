@@ -5,6 +5,7 @@ use warnings;
 
 use Time::HiRes;
 use File::Temp ':POSIX';
+use JSON;
 use IO::Socket::UNIX;
 use Plack::App::Prack::Request;
 
@@ -41,6 +42,12 @@ sub spawn {
 
     # read the pid
     my $p = $sock->getline;
+
+    # could be a stack trace
+    if ($p !~ /^\d+$/) {
+      my $stack = decode_json $p;
+      die "$stack->{name}: $stack->{message}";
+    }
 
     $self->{sock} = $sock;
     $self->{file} = $tmp;
